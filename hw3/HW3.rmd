@@ -1,0 +1,177 @@
+---
+title: 'Bios 6301: Assignment 3'
+author: "Abdurrahman Abdulhamid"
+date: "12/31/2022"
+output: html_document
+---
+
+50 points total.
+
+Add your name as `author` to the file metadata section.
+
+Submit a single knitr file (named `homework3.rmd`) by email to [tianyi.sun\@vanderbilt.edu](mailto:tianyi.sun@vanderbilt.edu){.email}. Place your R code in between the appropriate chunks for each question. Check your output by using the `Knit HTML` button in RStudio.
+
+$5^{n=day}$ points taken off for each day late.
+
+### Question 1
+
+**15 points**
+
+Write a simulation to calculate the power for the following study design. The study has two variables, treatment group and outcome. There are two treatment groups (0, 1) and they should be assigned randomly with equal probability. The outcome should be a random normal variable with a mean of 60 and standard deviation of 20. If a patient is in the treatment group, add 5 to the outcome. 5 is the true treatment effect. Create a linear model for the outcome by the treatment group, and extract the p-value (hint: see assigment1). Test if the p-value is less than or equal to the alpha level, which should be set to 0.05.
+
+Repeat this procedure 1000 times. The power is calculated by finding the percentage of times the p-value is less than or equal to the alpha level. Use the `set.seed` command so that the professor can reproduce your results.
+
+1.a. Find the power when the sample size is 100 patients. (10 points)
+
+```{r}
+set.seed(1000)
+n_sims <- 1000 # we want 1000 simulations
+p_vals <- c()
+for(i in 1:n_sims){
+  group1 <- rnorm(100,60,20) # simulate group 1
+  group2 <- rnorm(100,65,25) # simulate group 2
+  p_vals[i] <- t.test(group1, group2)$p.value # run t-test and extract the p-value
+}
+p_vals
+mean(p_vals <= .05) # check power (i.e. proportion of p-values that are smaller than alpha-level of .05)
+Y<-lm(group1~group2)
+plot(Y)
+```
+
+1.b. Find the power when the sample size is 1000 patients. (5 points)
+
+```{r}
+set.seed(1000)
+n_sims <- 1000 # we want 1000 simulations
+p_vals <- c()
+for(i in 1:n_sims){
+  group1 <- rnorm(1000,60,20) # simulate group 1
+  group2 <- rnorm(1000,65,25) # simulate group 2
+  p_vals[i] <- t.test(group1, group2)$p.value # run t-test and extract the p-value
+}
+p_vals
+mean(p_vals <= .05) # check power (i.e. proportion of p-values that are smaller than alpha-level of .05)
+Y<-lm(group1~group2)
+plot(Y)
+
+```
+
+### Question 2
+
+**14 points**
+
+Obtain a copy of the [football-values lecture](https://github.com/couthcommander/football-values). Save the `2021/proj_wr21.csv` file in your working directory. Read in the data set and remove the first two columns.
+
+```{r}
+library(dplyr)
+d_original <- read.csv("proj_wr21.csv")
+data_remove_2_columns <- d_original %>% dplyr::select(-c(1, 2))
+data_remove_2_columns
+```
+
+1.  Show the correlation matrix of this data set. (4 points)
+
+```{r}
+data_remove_2_columns.cor<- cor(data_remove_2_columns)
+data_remove_2_columns.cor
+head(data_remove_2_columns.cor)
+```
+
+1.  Generate a data set with 30 rows that has a similar correlation structure. Repeat the procedure 1,000 times and return the mean correlation matrix. (10 points)
+
+```{r}
+library(MASS)
+(data_remove_2_columns.cor<- cor(data_remove_2_columns))
+(vcov.data=cov(data_remove_2_columns))
+(means.data=colMeans(data_remove_2_columns))
+
+o2.sim = mvrnorm(30, mu = means.data, Sigma = vcov.data)
+o2.sim = as.data.frame(o2.sim)
+
+(rho.sim=cor(o2.sim))   
+keep.1=0
+loops=10000
+
+for (i in 1:loops) {
+  o2.sim = mvrnorm(30, mu = means.data, Sigma = vcov.data)
+  keep.1=keep.1+cor(o2.sim)/loops   # Sneaky way to take average as it accumulates
+}
+keep.1 
+colMeans(keep.1)
+data_remove_2_columns.cor ; 
+        # and the difference can be further reduced by increasing 'loops'
+
+data_remove_2_columns.cor: colMeans(keep.1)     
+```
+
+### Question 3
+
+**21 points**
+
+Here's some code:
+
+```{r}
+nDist <- function(n = 100) {
+  df <- 10
+  prob <- 1/3
+  shape <- 1
+  size <- 16
+  list(
+    beta = rbeta(n, shape1 = 5, shape2 = 45),
+    binomial = rbinom(n, size, prob),
+    chisquared = rchisq(n, df),
+    exponential = rexp(n),
+    f = rf(n, df1 = 11, df2 = 17),
+    gamma = rgamma(n, shape),
+    geometric = rgeom(n, prob),
+    hypergeometric = rhyper(n, m = 50, n = 100, k = 8),
+    lognormal = rlnorm(n),
+    negbinomial = rnbinom(n, size, prob),
+    normal = rnorm(n),
+    poisson = rpois(n, lambda = 25),
+    t = rt(n, df),
+    uniform = runif(n),
+    weibull = rweibull(n, shape)
+  )
+}
+```
+
+1.  What does this do? (3 points)
+
+```{r}
+round(sapply(nDist(5000), mean), 2)
+```
+
+    A user defined function named nDist is created as a data with n as a function parameter (argument) and function body which has set of commands. The function nDist(500) is to generate 500 random numbers and the function sapply is used to apply a function (mean) on the list of the fifteen (15) distributions in the function body and round it to 2 decimal places.
+
+1.  What about this? (3 points)
+
+```{r}
+sort(apply(replicate(20, round(sapply(nDist(10000), mean), 2)), 1, sd))
+```
+
+    As in expalained in round(sapply(nDist(500), mean), 2), here n = 10000. That is round(sapply(nDist(10000), mean), 2) but the function replicate is to replicate round(sapply(nDist(1000), mean), 2) twenty (20) times and the standard deviations of the rows were obtained using the function apply. Whereas the sort function returns sorted output in ascending order which is the default.
+
+In the output above, a small value would indicate that `N=10,000` would provide a sufficent sample size as to estimate the mean of the distribution. Let's say that a value *less than 0.02* is "close enough".
+
+1.  For each distribution, estimate the sample size required to simulate the distribution's mean. (15 points)
+
+Don't worry about being exact. It should already be clear that N \< 10,000 for many of the distributions. You don't have to show your work. Put your answer to the right of the vertical bars (`|`) below.
+
+| distribution   | N        |
+|----------------|----------|
+| beta           | 50?      |
+| binomial       | 7,500?   |
+| chisquared     | 30,000?  |
+| exponential    | 1,700?   |
+| f              | 1,100?   |
+| gamma          | 1,500?   |
+| geometric      | 7,700?   |
+| hypergeometric | 3,000?   |
+| lognormal      | 9,100?   |
+| negbinomial    | 200,000? |
+| normal         | 1,500?   |
+| poisson        | 40,000?  |
+| t              | 1,500?   |
+| uniform        | 180?     |
+| weibull        | 1,700?   |
