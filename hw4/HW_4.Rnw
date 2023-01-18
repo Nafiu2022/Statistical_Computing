@@ -3,7 +3,8 @@
 \begin{document}
 \SweaveOpts{concordance=TRUE}
 \begin{equation}
-H_2+O_2 \rightarrow 2H_2O
+\sum_i (p(B\A_i)P(Ai)
+\rightarrow P(A_i\B)=\frac{P(B\A_i)P(B)}{\sum_j P(B\A_i)}
 \end{equation}
 \begin{equation}
 \zeta_n = [x_1, x_2,..., x_n]
