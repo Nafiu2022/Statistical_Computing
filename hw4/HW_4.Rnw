@@ -1,16 +1,24 @@
 \documentclass{article}
-
+\usepackage{amsmath}
+\usepackage{amssymb}
 \begin{document}
 \SweaveOpts{concordance=TRUE}
 \begin{equation}
-\sum_i (p(B\A_i)P(Ai)
-\rightarrow P(A_i\B)=\frac{P(B\A_i)P(B)}{\sum_j P(B\A_i)}
+P(B)=\sum_{i} P(B|A_i)P(Ai),
+\implies P(A_i|B)=\frac{P(B|A_i)P(A_i)}{\sum_{j} P(B|A_j)P(A_j)}
 \end{equation}
 \begin{equation}
-\zeta_n = [x_1, x_2,..., x_n]
+\hat f(\zeta) = \int_{-\infty}^{\infty} f(x) e^{-2\pi ix \zeta} dx
 \end{equation}
 \begin{equation}
-\frac{\partial{y}}{\partial{x}} = x^2y-x+y
+\mathbf{J} = \frac{d\mathbf{f}}{d\mathbf {x}} = \left[ \frac{\partial{\mathbf {f}}}{\partial{x_1}}...\frac{\partial{\mathbf {f}}}{\partial{x_n}} \right] 
+\begin{bmatrix}
+    \frac{\partial{{f_1}}}{\partial{x_1}} & \dots & \frac{\partial{{f_1}}}{\partial{x_n}} \\
+   
+    \vdots & \ddots &\vdots\\
+    \frac{\partial{ {f_m}}}{\partial{x_1}}  &   \dots &\frac{\partial{{f_m}}}{\partial{x_n}}
+\end{bmatrix}
 \end{equation}
 
 \end{document}
+
